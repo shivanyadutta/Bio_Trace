@@ -1,0 +1,26 @@
+{
+  "name": "biotrace-ayurvedic-herb-traceability",
+  "version": "1.0.0",
+  "description": "Quantum-Enhanced Blockchain-Based Ayurvedic Herb Traceability System",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build needed'",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "ayurvedic",
+    "herb",
+    "traceability",
+    "blockchain",
+    "quantum",
+    "machine-learning",
+    "supply-chain"
+  ],
+  "author": "BioTrace Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
+

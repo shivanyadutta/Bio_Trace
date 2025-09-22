@@ -1,0 +1,128 @@
+For Windows : 
+
+Step 1: Sign Out & Close Cursor
+Sign out of Cursor from both the IDE and any open browser sessions.
+Completely close the Cursor application.
+
+Step 2: Install Latest Cursor
+Download and install the most recent version of Cursor from its official website.
+Launch Cursor once and then close it immediately without signing in.
+
+Step 3: Run PowerShell Reset Script
+Download the provided PowerShell reset script.
+Open PowerShell as administrator.
+To do this, search for “PowerShell” in the Start Menu, right-click on “Windows PowerShell,” and select “Run as administrator.”
+Navigate to your Downloads directory in PowerShell by typing:
+
+cd location of your file
+
+Execute the reset script by running the following command:
+
+powershell -ExecutionPolicy Bypass -File .\reset.ps1
+
+Important: If any stage of this PowerShell script fails, you will need to switch to the “Manual Method” detailed below (though the manual method is specifically for macOS in your original input, it implies a more hands-on approach would be needed for Windows if the script fails).
+
+Step 4: Launch Cursor & Sign Up
+Open the Cursor IDE.
+Create a temporary email address using a service like Temp Mail.
+Proceed with the sign-up process using the temporary email.
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+For macOS: 
+
+Step 1: Quit Cursor Completely
+Ensure the Cursor application is fully closed before proceeding.
+
+Step 2: Delete Existing Cursor Data
+Remove the following folders from your system. You can do this by opening Finder, pressing Cmd + Shift + G, and pasting each path:
+~/Library/Application Support/Cursor
+~/Library/Application Support/cursor-updater
+
+Step 3: Install Latest Version of Cursor
+Download and install the most recent version of Cursor from its official website.
+Launch Cursor once and then close it immediately without signing in.
+
+Step 4: Modify storage.json
+Navigate to the following directory:
+~/Library/Application Support/Cursor/User/globalStorage/storage.json
+Create a backup of the original storage.json file before making any changes.
+Open storage.json with a text editor and replace its entire content with the following information (these are the provided “MercyHacks identifiers”):
+{
+  "telemetry.devDeviceId": "d2afe851-ddd5-449d-8057-256310261dbe",
+  "telemetry.machineId": "0f2c88c88c3bdb19ffd0080c480ffcc32430bb92c914789f1bc95435aa15e57c",
+  "telemetry.macMachineId": "8eb164dafed818edcb267efe053bb0fb12928804e81a28cac61a3ce6b32181a4fb965d62572015cf418d890dcd86e9f502a95e00a06096c158f6c3c6a0624f46",
+  "telemetry.sqmId": "{CA7FC444-C014-418E-8630-309E4D0F87BA}",
+  "storage.serviceMachineId": "d2afe851-ddd5-449d-8057-256310261dbe"
+}
+Save and close the file.
+
+Step 5: Generate New UUID for Machine Identity
+Open Terminal (search for it in Spotlight or find it in Applications/Utilities).
+Run the following command:
+uuidgen > ~/Library/Application\ Support/Cursor/machineId
+
+Step 6: Update SQLite Database
+You have two options for this step: using a Python script or a SQLite browser.
+
+Option A: Using Python Script (Recommended)
+Save the following Python script as update_cursor_db.py in a convenient location (e.g., your Desktop or Documents folder):
+import sqlite3
+import os
+import shutil
+
+# Your MercyHacks keys
+devDeviceId = "d2afe851-ddd5-449d-8057-256310261dbe"
+machineId = "0f2c88c88c3bdb19ffd0080c480ffcc32430bb92c914789f1bc95435aa15e57c"
+macMachineId = "8eb164dafed818edcb267efe053bb0fb12928804e81a28cac61a3ce6b32181a4fb965d62572015cf418d890dcd86e9f502a95e00a06096c158f6c3c6a0624f46"
+sqmId = "{CA7FC444-C014-418E-8630-309E4D0F87BA}"
+
+# Locate database
+home_dir = os.path.expanduser("~")
+db_path = os.path.join(home_dir, "Library/Application Support/Cursor/User/globalStorage/state.vscdb")
+
+if os.path.exists(db_path):
+    # Create backup
+    backup_path = db_path + ".backup"
+    shutil.copy2(db_path, backup_path)
+    print(f"Created backup at {backup_path}")
+
+    # Update values
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE ItemTable SET value = ? WHERE key = 'telemetry.devDeviceId'", (devDeviceId,))
+    cursor.execute("UPDATE ItemTable SET value = ? WHERE key = 'telemetry.machineId'", (machineId,))
+    cursor.execute("UPDATE ItemTable SET value = ? WHERE key = 'telemetry.macMachineId'", (macMachineId,))
+    cursor.execute("UPDATE ItemTable SET value = ? WHERE key = 'telemetry.sqmId'", (sqmId,))
+    cursor.execute("UPDATE ItemTable SET value = ? WHERE key = 'storage.serviceMachineId'", (devDeviceId,))
+
+    conn.commit()
+    conn.close()
+    print("✅ Successfully updated Cursor database")
+else:
+    print(f"❌ Database not found at {db_path}")
+Open Terminal, navigate to the directory where you saved the script (e.g., cd ~/Desktop), and run the script:
+python3 update_cursor_db.py
+
+Option B: Using SQLite Browser
+
+Install DB Browser for SQLite. You can download it from sqlitebrowser.org.
+Open the Cursor database file in DB Browser for SQLite:
+~/Library/Application Support/Cursor/User/globalStorage/state.vscdb
+Navigate to the ItemTable within the database.
+Locate and update the value for the following key entries with the corresponding new values:
+Key	                  New Value
+telemetry.devDeviceId	d2afe851-ddd5-449d-8057-256310261dbe
+telemetry.machineId	0f2c88c88c3bdb19ffd0080c480ffcc32430bb92c914789f1bc95435aa15e57c
+telemetry.macMachineId	8eb164dafed818edcb267efe053bb0fb12928804e81a28cac61a3ce6b32181a4fb965d62572015cf418d890dcd86e9f502a95e00a06096c158f6c3c6a0624f46
+telemetry.sqmId	{CA7FC444-C014-418E-8630-309E4D0F87BA}
+storage.serviceMachineId	d2afe851-ddd5-449d-8057-256310261dbe
+Save your changes and close the database in DB Browser for SQLite.
+🚀 Final Step: Launch and Sign In
+Open Cursor.
+
+Create a temporary email address using a service like Temp Mail.
+Complete the sign-up process using the temporary email.
+
+✅ You should now have full access to Cursor Pro features!
